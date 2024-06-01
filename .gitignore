@@ -1,7 +1,4 @@
 .ipynb_checkpoints
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-__pycache__/
-.tool-versions
+
+# Data
+data/
