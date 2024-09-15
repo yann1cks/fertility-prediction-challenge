@@ -1,7 +1,6 @@
 """
 This is an example script to generate the outcome variable given the input dataset.
-
-This script should be modified to prepare your own submission that predicts 
+This script should be modified to prepare your own submission that predicts
 the outcome for the benchmark challenge by changing the clean_df and predict_outcomes function.
 
 The predict_outcomes function takes a Pandas data frame. The return value must
@@ -9,7 +8,6 @@ be a data frame with two columns: nomem_encr and outcome. The nomem_encr column
 should contain the nomem_encr column from the input data frame. The outcome
 column should contain the predicted outcome for each nomem_encr. The outcome
 should be 0 (no child) or 1 (having a child).
-
 clean_df should be used to clean (preprocess) the data.
 
 run.py can be used to test your submission.
@@ -17,8 +15,8 @@ run.py can be used to test your submission.
 
 # List your libraries and modules here. Don't forget to update environment.yml!
 import pandas as pd
-from sklearn.linear_model import LogisticRegression
 import joblib
+#from prefer.data import *
 
 
 def clean_df(df, background_df=None):
@@ -44,8 +42,9 @@ def clean_df(df, background_df=None):
     # Selecting variables for modelling
     keepcols = [
         "nomem_encr",  # ID variable required for predictions,
-        "age"          # newly created variable
-    ] 
+        "age",  # newly created variable
+        "gender_bg",  # <--------ADDED VARIABLE
+    ]
 
     # Keeping data with variables selected
     df = df[keepcols]
@@ -54,8 +53,8 @@ def clean_df(df, background_df=None):
 
 
 def predict_outcomes(df, background_df=None, model_path="model.joblib"):
-    """Generate predictions using the saved model and the input dataframe.
-
+    """
+    Generate predictions using the saved model and the input dataframe.
     The predict_outcomes function accepts a Pandas DataFrame as an argument
     and returns a new DataFrame with two columns: nomem_encr and
     prediction. The nomem_encr column in the new DataFrame replicates the
@@ -75,8 +74,9 @@ def predict_outcomes(df, background_df=None, model_path="model.joblib"):
     """
 
     ## This script contains a bare minimum working example
-    if "nomem_encr" not in df.columns:
-        print("The identifier variable 'nomem_encr' should be in the dataset")
+
+    #if "nomem_encr" not in df.columns:
+    #    print("The identifier variable 'nomem_encr' should be in the dataset")
 
     # Load the model
     model = joblib.load(model_path)
@@ -85,15 +85,13 @@ def predict_outcomes(df, background_df=None, model_path="model.joblib"):
     df = clean_df(df, background_df)
 
     # Exclude the variable nomem_encr if this variable is NOT in your model
-    vars_without_id = df.columns[df.columns != 'nomem_encr']
+    vars_without_id = df.columns[df.columns != "nomem_encr"]
 
     # Generate predictions from model, should be 0 (no child) or 1 (had child)
     predictions = model.predict(df[vars_without_id])
 
     # Output file should be DataFrame with two columns, nomem_encr and predictions
-    df_predict = pd.DataFrame(
-        {"nomem_encr": df["nomem_encr"], "prediction": predictions}
-    )
+    df_predict = pd.DataFrame({"nomem_encr": df["nomem_encr"], "prediction": predictions})
 
     # Return only dataset with predictions and identifier
     return df_predict
