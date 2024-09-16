@@ -10753,7 +10753,8 @@ def clean_df(df, background_df=None):
     """
 
     # Select columns
-    X = df[COLS_TO_SELECT].copy()
+    X = df[[*COLS_TO_SELECT, "nomem_encr"]].copy()
+    X = X.set_index("nomem_encr")
 
     # Optimize dtypes to get pandas Int dtypes.
     X = X.convert_dtypes(dtype_backend="pyarrow")
@@ -10803,9 +10804,6 @@ def predict_outcomes(df, background_df=None, model_path="flaml_model.joblib"):
 
     # Preprocess the fake / holdout data
     df = clean_df(df, background_df)
-
-    # Exclude the variable nomem_encr if this variable is NOT in your model
-    vars_without_id = df.columns[df.columns != "nomem_encr"]
 
     # Generate predictions from model, should be 0 (no child) or 1 (had child)
     predictions = model.predict(df)
